@@ -134,9 +134,11 @@ app.get("/players/:playerId/matches", async (request, response) => {
     SELECT 
         match_details.match_id,match,year,player_match_score.player_id
     FROM 
-        match_details JOIN player_match_score
+        match_details INNER JOIN player_match_score ON 
+        match_details.match_id = player_match_score.match_id
     WHERE 
-        player_id = ${playerId};`;
+        player_id = ${playerId}
+    ;`;
     const playerMatchesList = await database.all(getPlayerMatchesQuery);
     response.send(
       playerMatchesList.map((eachObj) => convertJsonToPlayerMatchesObj(eachObj))
@@ -154,14 +156,12 @@ app.get("/matches/:matchId/players", async (request, response) => {
     //console.log(matchId);
     const getListPlayersMatchQuery = `
     SELECT 
-        *
+        player_details.player_id,player_details.player_name
     FROM 
         player_details INNER JOIN player_match_score ON 
         player_details.player_id = player_match_score.player_id
     WHERE 
-        match_id = ${matchId}
-    GROUP BY 
-        player_details.player_id;`;
+        match_id = ${matchId};`;
     const PlayersMatchList = await database.all(getListPlayersMatchQuery);
     response.send(
       PlayersMatchList.map((eachObj) =>
@@ -180,18 +180,18 @@ app.get("/matches/:matchId/players", async (request, response) => {
 app.get("/players/:playerId/playerScores", async (request, response) => {
   try {
     const { playerId } = request.params;
-    //console.log(playerId);
+    console.log(playerId);
     const getPlayerStatsQuery = `
     SELECT 
-        player_details.player_id,
-        player_details.player_name,
+        player_id,
+        player_name,
         SUM(score),
         SUM(fours),
         SUM(sixes)
     FROM 
-        player_details JOIN player_match_score
+        player_details NATURAL JOIN player_match_score
     WHERE 
-        player_match_score.player_id = ${playerId};`;
+        player_id = ${playerId};`;
     const PlayerStats = await database.get(getPlayerStatsQuery);
     //response.send(PlayerStats);
     response.send({

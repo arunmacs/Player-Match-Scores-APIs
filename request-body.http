@@ -8,11 +8,6 @@ GET http://localhost:3001/players/5/
 
 GET http://localhost:3001/matches/2/
 
-###
-
-POST http://localhost:3001/players/
-Content-Type: application/json
-
 
 ###
 
@@ -37,4 +32,4 @@ GET http://localhost:3001/matches/2/players
 
 ###
 
-GET http://localhost:3001/players/8/playerScores
+GET http://localhost:3001/players/1/playerScores
